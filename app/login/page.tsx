@@ -24,11 +24,11 @@ export default function Login({ searchParams, }: { searchParams: { message: stri
     return redirect("/protected");
   };
 
-  const signInWithGithub = async (formData: FormData) => {
+  const signInWithGithub = async () => {
     "use server";
     const supabase = createClient();
     const origin = headers().get(`origin`);
-
+    console.log(origin)
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
