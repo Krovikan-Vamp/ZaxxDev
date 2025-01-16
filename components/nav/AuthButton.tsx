@@ -1,6 +1,7 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {motion} from 'framer-motion';
 
 export default async function AuthButton() {
   const supabase = createClient();
@@ -18,10 +19,11 @@ export default async function AuthButton() {
   };
 
   return user ? (
-    <div className="flex items-center gap-4">
+    <div 
+    className="flex items-center gap-4">
       Hey, {user.email}!
       <form action={signOut}>
-        <button className="btn btn-active btn-primary">
+        <button className="btn btn-secondary btn-sm">
           Logout
         </button>
       </form>
@@ -29,7 +31,7 @@ export default async function AuthButton() {
   ) : (
     <Link
       href="/login"
-      className="btn btn-active btn-primary"
+      className="btn btn-secondary btn-sm"
     >
       Login
     </Link>

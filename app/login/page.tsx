@@ -1,139 +1,63 @@
-import Link from "next/link";
-import { headers } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
+import { FaApple, FaGithub, FaGoogle } from "react-icons/fa";
+import { signInWithGithub, signInWithApple, signInWithGoogle, signInWithUsernamePassword, signUp } from "@/lib/actions";
 
 export default function Login({ searchParams, }: { searchParams: { message: string; }; }) {
-  const signInWithUsernamePassword = async (formData: FormData) => {
-    "use server";
 
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/protected");
-  };
-
-  const signInWithGithub = async () => {
-    "use server";
-    const supabase = createClient();
-    const origin = headers().get(`origin`);
-    console.log(origin)
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        'redirectTo': `${origin}/auth/callback?next=/protected`
-      }
-    });
-
-    if (data.url) redirect(data.url) // Login was successful
-    if (error) return redirect("/login?message=Could not authenticate user"); // Error present in signin method ^
-    
-    let sessionToken = await supabase.auth.getUser();
-    if (!sessionToken) return redirect(`/login?message=${encodeURIComponent(`Could not get session token following sign in.`)}`)
-
-    return null;
-  };
-
-  const signUp = async (formData: FormData) => {
-    "use server";
-
-    const origin = headers().get("origin");
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/login?message=Check email to continue sign in process");
-  };
-
-  return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
-      <Link
-        href="/"
-        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>{" "}
-        Back
-      </Link>
-
-      <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
-        <label className="text-md" htmlFor="email">
-          Email
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          name="email"
-          placeholder="you@example.com"
-          required
-        />
-        <label className="text-md" htmlFor="password">
-          Password
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          required
-        />
-        <SubmitButton
-          formAction={signInWithUsernamePassword}
-          className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing In..."
-        >
-          Sign In
-        </SubmitButton>
-        <SubmitButton
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing Up..."
-        >
-          Sign Up
-        </SubmitButton>
-        {searchParams?.message && (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
-          </p>
-        )}
-      </form>
-      <form>
-        <SubmitButton formAction={signInWithGithub}>Sign In With Github! ♥</SubmitButton>
-      </form>
-    </div>
-  );
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="flex-1 flex flex-col w-full px-8 sm:max-w-lg justify-center gap-2 bg-base-300 card py-8">
+                <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground ">
+                    <h2 className="text-2xl font-bold">Login</h2>
+                    <hr className="mb-6" />
+                    <label className="text-md" htmlFor="email">
+                        Email
+                    </label>
+                    <input
+                        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+                        name="email"
+                        placeholder="you@example.com"
+                        required
+                    />
+                    <label className="text-md" htmlFor="password">
+                        Password
+                    </label>
+                    <input
+                        className="rounded-md px-4 py-2 bg-inherit border mb-6"
+                        type="password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                    />
+                    <SubmitButton
+                        formAction={signInWithUsernamePassword}
+                        className="btn btn-primary text-md hover:scale-110 mb-3"
+                    >
+                        Sign In
+                    </SubmitButton>
+                    <SubmitButton
+                        formAction={signUp}
+                        className="btn bg-base-200 text-md mb-2 hover:scale-110"
+                    >
+                        Sign Up
+                    </SubmitButton>
+                    {searchParams?.message && (
+                        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+                            {searchParams.message}
+                        </p>
+                    )}
+                </form>
+                <h2 className="text-2xl font-bold">Provider Sign In</h2>
+                <hr className="mb-4" />
+                <form>
+                    <div className="flex flex-row flex-wrap justify-evenly transition-all">
+                        <SubmitButton className="btn border-2 border-base-100 hover:scale-110" formAction={signInWithGithub}><FaGithub size={20} /></SubmitButton>
+                        <SubmitButton className="btn border-2 border-base-100 hover:scale-110" formAction={signInWithGoogle}><FaGoogle size={20} /></SubmitButton>
+                        <div className="tooltip" data-tip="Coming soon!"><SubmitButton className="btn-disabled btn border-2 border-base-100" formAction={signInWithApple}><FaApple size={20} /></SubmitButton></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }

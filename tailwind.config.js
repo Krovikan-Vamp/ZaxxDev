@@ -16,5 +16,14 @@ module.exports = {
       },
     },
   },
-  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+    "dracula",
+      "light",
+      "cupcake",
+      "nord",
+      "dark",
+    ],
+  },
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
 };
